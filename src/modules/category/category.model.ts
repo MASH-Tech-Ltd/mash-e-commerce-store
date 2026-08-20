@@ -18,7 +18,14 @@ const categorySchema = new Schema<ICategory>(
 );
 
 function generateSlug(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.random().toString(36).substring(2, 8);
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[\s\u00A0]+/g, '-')       // spaces → hyphens
+    .replace(/[^\p{L}\p{N}\-]+/gu, '')  // keep letters (any language), numbers, hyphens
+    .replace(/-{2,}/g, '-')             // collapse multiple hyphens
+    .replace(/^-|-$/g, '')              // trim leading/trailing hyphens
+    + '-' + Date.now().toString(36);
 }
 
 categorySchema.pre('validate', function() {

@@ -10,15 +10,23 @@ const createProduct = async (payload: Partial<IProduct>): Promise<IProduct> => {
 
 const getAllProducts = async (query: any): Promise<{ data: IProduct[], meta: any }> => {
   const { page, limit, skip } = paginationHelper(query?.page, query?.limit);
-  const { search, sortBy, sortOrder, categoryId, status } = query;
+  const { search, sortBy, sortOrder, categoryId, status, brand, minPrice, maxPrice, inStock } = query;
 
   const filter: any = {};
 
   if (search) {
+    const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    const escapedSearch = escapeRegex(search as string);
+    
+    const regexPattern = escapedSearch
+      .replace(/য়|য়/g, '(য়|য়)')
+      .replace(/ড়|ড়/g, '(ড়|ড়)')
+      .replace(/ঢ়|ঢ়/g, '(ঢ়|ঢ়)');
+
     filter.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
-      { shortDescription: { $regex: search, $options: 'i' } },
+      { title: { $regex: regexPattern, $options: 'i' } },
+      { description: { $regex: regexPattern, $options: 'i' } },
+      { shortDescription: { $regex: regexPattern, $options: 'i' } },
     ];
   }
 
@@ -30,9 +38,35 @@ const getAllProducts = async (query: any): Promise<{ data: IProduct[], meta: any
     filter.status = status;
   }
 
+  if (brand) {
+    filter.brand = brand;
+  }
+
+  if (minPrice || maxPrice) {
+    filter.discountedPrice = {};
+    if (minPrice) filter.discountedPrice.$gte = Number(minPrice);
+    if (maxPrice) filter.discountedPrice.$lte = Number(maxPrice);
+  }
+
+  if (inStock === 'true') {
+    filter.stock = { $gt: 0 };
+  }
+
   const sortCondition: any = {};
   if (sortBy) {
-    sortCondition[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    if (sortBy === 'price_asc') {
+      sortCondition['discountedPrice'] = 1;
+    } else if (sortBy === 'price_desc') {
+      sortCondition['discountedPrice'] = -1;
+    } else if (sortBy === 'discount_desc') {
+      sortCondition['saveAmount'] = -1;
+    } else if (sortBy === 'newest') {
+      sortCondition['createdAt'] = -1;
+    } else if (sortBy === 'brand') {
+      sortCondition['brand'] = 1;
+    } else {
+      sortCondition[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    }
   } else {
     sortCondition['createdAt'] = -1;
   }

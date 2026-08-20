@@ -54,7 +54,14 @@ const productSchema = new Schema<IProduct>(
 );
 
 function generateSlug(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.random().toString(36).substring(2, 8);
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[\s\u00A0]+/g, '-')       // spaces → hyphens
+    .replace(/[^\p{L}\p{N}\-]+/gu, '')  // keep letters (any language), numbers, hyphens
+    .replace(/-{2,}/g, '-')             // collapse multiple hyphens
+    .replace(/^-|-$/g, '')              // trim leading/trailing hyphens
+    + '-' + Date.now().toString(36);
 }
 
 productSchema.pre('validate', function() {
