@@ -10,8 +10,8 @@ const PORT = config.port || 8000;
 
 connectDatabase()
   .then(async () => {
-    await seedAdmin();
-    await seedDemoStorefront();
+    // await seedAdmin();
+    // await seedDemoStorefront();
     const server = app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
     });
