@@ -33,7 +33,7 @@ app.use(morgan(config.env === "development" ? "dev" : "short"));
 app.use("/api/v1", routes);
 
 // Health check endpoint
-app.get("/ping", (req: Request, res: Response) => {
+app.get("/health/rit", (req: Request, res: Response) => {
   res.status(200).json({ message: "pong", time: new Date() });
 });
 

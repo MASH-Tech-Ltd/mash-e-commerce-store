@@ -6,7 +6,7 @@ dotenv.config({ path: path.join(process.cwd(), '.env') });
 export default {
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 8000,
-  database_url: process.env.DATABASE_URL || 'mongodb://localhost:27017/electronics',
+  database_url: process.env.DATABASE_URL,
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
   jwt_secret: process.env.JWT_SECRET || 'secret',
   jwt_expires_in: process.env.JWT_EXPIRES_IN || '30d',
