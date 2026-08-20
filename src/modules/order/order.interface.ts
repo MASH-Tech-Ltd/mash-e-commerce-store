@@ -1,0 +1,25 @@
+import { Document, Types } from 'mongoose';
+
+export interface IOrderItem {
+  productId: Types.ObjectId | string;
+  title: string;
+  price: number;
+  quantity: number;
+  image: string;
+  variantName?: string | null;
+}
+
+export interface IOrder extends Document {
+  customerName: string;
+  customerPhone: string;
+  shippingAddress: string;
+  note?: string;
+  items: IOrderItem[];
+  subTotal: number;
+  shippingCharge: number;
+  totalPrice: number;
+  paymentStatus: 'unpaid' | 'paid';
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: Date;
+  updatedAt: Date;
+}
