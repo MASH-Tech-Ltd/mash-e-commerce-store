@@ -1,6 +1,7 @@
 import { Category } from "../modules/category/category.model";
 import { Product } from "../modules/product/product.model";
 import { Theme } from "../modules/theme/theme.model";
+import { deleteCloudinary } from "../helpers/cloudinary";
 
 // ─── Category Image Map ────────────────────────────────────────────
 const categoryImages: Record<string, { img1: string; img2: string }> = {
@@ -1890,6 +1891,58 @@ const categoryPriceRanges: Record<string, [number, number]> = {
 export const seedDemoStorefront = async () => {
   try {
     console.log("🧹 বিদ্যমান ডেটা মুছে নতুন সিড শুরু হচ্ছে...");
+    // ── Step 0: Delete real Cloudinary assets before wiping DB ───────
+    console.log("☁️  Cloudinary থেকে পুরনো ছবি মুছে ফেলা হচ্ছে...");
+
+    // Collect product image public_ids
+    const productDocs = await Product.find(
+      {},
+      { "images.public_id": 1, _id: 0 }
+    ).lean();
+
+    const productPublicIds: string[] = productDocs
+      .flatMap((p: any) =>
+        (p.images ?? []).map((img: any) => img?.public_id).filter(Boolean)
+      )
+      // Skip fake seeder ids (prod-N-N pattern)
+      .filter((id: string) => !/^prod-\d+-\d+$/.test(id));
+
+    // Collect category image public_ids
+    const categoryDocs = await Category.find(
+      {},
+      { "image.public_id": 1, _id: 0 }
+    ).lean();
+
+    const categoryPublicIds: string[] = categoryDocs
+      .map((c: any) => c?.image?.public_id)
+      .filter(Boolean)
+      // Skip fake seeder ids (cat_N pattern)
+      .filter((id: string) => !/^cat_\d+$/.test(id));
+
+    const allPublicIds = [...productPublicIds, ...categoryPublicIds];
+
+    if (allPublicIds.length > 0) {
+      // Delete in batches of 100 to stay within Cloudinary rate limits
+      const BATCH = 100;
+      for (let i = 0; i < allPublicIds.length; i += BATCH) {
+        const batch = allPublicIds.slice(i, i + BATCH);
+        await Promise.allSettled(
+          batch.map((id) =>
+            deleteCloudinary(id, "image").catch((err) =>
+              console.warn(`⚠️  Cloudinary delete skipped for ${id}:`, err?.message)
+            )
+          )
+        );
+        console.log(
+          `🗑️  ${Math.min(i + BATCH, allPublicIds.length)}/${allPublicIds.length} ছবি Cloudinary থেকে মুছা হয়েছে`
+        );
+      }
+      console.log("✅ Cloudinary ক্লিনআপ সম্পন্ন।");
+    } else {
+      console.log("ℹ️  মুছার মতো কোনো Cloudinary ছবি পাওয়া যায়নি।");
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     await Product.deleteMany({});
     await Category.deleteMany({});
     await Theme.deleteMany({});

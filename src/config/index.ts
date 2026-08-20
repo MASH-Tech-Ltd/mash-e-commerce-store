@@ -14,6 +14,7 @@ export default {
   admin_email: process.env.ADMIN_EMAIL || 'admin@demo.com',
   admin_password: process.env.ADMIN_PASSWORD || 'admin123',
   base_domain: process.env.BASE_DOMAIN || 'localhost',
+  server_url: process.env.SERVER_URL || `http://localhost:${process.env.PORT || 8000}`,
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
