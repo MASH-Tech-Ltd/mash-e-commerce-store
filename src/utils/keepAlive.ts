@@ -19,6 +19,7 @@ import config from '../config/index';
 export const startKeepAliveCron = (): void => {
   const serverUrl = config.server_url;
   const healthUrl = `${serverUrl}/health/rit`;
+  console.log("healthUrl", healthUrl);
 
   // Run at midnight every 8 minutes when for two days
   
