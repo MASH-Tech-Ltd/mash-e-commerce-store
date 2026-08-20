@@ -20,8 +20,9 @@ export const startKeepAliveCron = (): void => {
   const serverUrl = config.server_url;
   const healthUrl = `${serverUrl}/health/rit`;
 
-  // Run at midnight every 2 days
-  cron.schedule('0 0 */2 * *', async () => {
+  // Run at midnight every 8 minutes when for two days
+  
+  cron.schedule('*/8 * * * *', async () => {
     const timestamp = new Date().toISOString();
     console.log(`[KeepAlive] 🔄 Pinging server at ${timestamp} → ${healthUrl}`);
 
