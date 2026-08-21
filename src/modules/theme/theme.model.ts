@@ -7,9 +7,9 @@ export interface IFooterSetting {
     tiktok?: string;
   };
   contactInfo?: {
-    email?: string;
-    phone?: string;
-    address?: string;
+    email?: string | undefined;
+    phone?: string | undefined;
+    address?: string | undefined;
   };
   policies?: {
     aboutUs?: string;

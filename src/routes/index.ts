@@ -14,6 +14,7 @@ import { FraudCheckRoutes } from '../modules/fraudCheck/fraudCheck.route';
 import { UserRoutes } from '../modules/user/user.route';
 import { SupportRoutes } from '../modules/support/support.route';
 import { NotificationRoutes } from '../modules/notification/notification.route';
+import { StoreRoutes } from '../modules/store/store.route';
 
 const router = Router();
 
@@ -21,6 +22,10 @@ const moduleRoutes = [
   {
     path: '/users',
     route: UserRoutes,
+  },
+  {
+    path: '/store',
+    route: StoreRoutes,
   },
 
   {

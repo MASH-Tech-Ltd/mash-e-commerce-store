@@ -21,3 +21,4 @@ export default {
     apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
 };
+
