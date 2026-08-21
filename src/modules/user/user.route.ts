@@ -16,6 +16,7 @@ router.put(
 );
 
 // Only Super Admin can view all users, get specific user, update or delete other users
+router.get("/me", authMiddleware("admin"), UserController.getMe);
 router.get("/", authMiddleware("admin"), UserController.getAllUsers);
 router.get("/:id", authMiddleware("admin"), UserController.getUserById);
 router.put("/:id", authMiddleware("admin"), validateRequest(UserValidation.updateUserSchema), UserController.updateUser);

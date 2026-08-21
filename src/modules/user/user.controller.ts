@@ -47,6 +47,12 @@ const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   ApiResponse.sendSuccess(res, 200, "Users retrieved successfully", result);
 });
 
+const getMe = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req as any).user._id;
+  const result = await UserService.getUserById(userId as string);
+  ApiResponse.sendSuccess(res, 200, "Profile retrieved successfully", result);
+});
+
 const getUserById = asyncHandler(async (req: Request, res: Response) => {
   const result = await UserService.getUserById(req.params.id as string);
   ApiResponse.sendSuccess(res, 200, "User retrieved successfully", result);
@@ -73,6 +79,7 @@ const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const UserController = {
   updateProfile,
+  getMe,
   getAllUsers,
   getUserById,
   updateUser,
