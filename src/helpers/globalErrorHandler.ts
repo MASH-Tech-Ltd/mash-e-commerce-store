@@ -88,6 +88,21 @@ export const globalErrorHandler = (
     err = new CustomError(401, "JWT token expired.");
   } else if (error instanceof jwt.JsonWebTokenError) {
     err = new CustomError(401, "Invalid access token.");
+  } else if (error.name === "ZodError" || error.constructor.name === "ZodError") {
+    try {
+      const parsedErrors = JSON.parse(error.message);
+      // Only take the first error for a clean, modern toast message
+      const firstIssue = parsedErrors[0];
+      const fieldName = String(firstIssue.path[firstIssue.path.length - 1] || "");
+      const capitalizedField = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+      
+      let cleanMessage = firstIssue.message;
+      if (cleanMessage.includes("Too small")) cleanMessage = "Must be at least 6 characters";
+      
+      err = new CustomError(400, `${capitalizedField}: ${cleanMessage}`, parsedErrors);
+    } catch (e) {
+      err = new CustomError(400, "Validation Error");
+    }
   } else
     if (error.name === "ValidationError") {
       const validationErrors = Object.values((error as mongoose.Error.ValidationError).errors).map((el: any) => ({

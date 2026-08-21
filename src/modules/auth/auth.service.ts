@@ -7,6 +7,8 @@ import config from '../../config';
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 
+import CustomError from '../../helpers/CustomError';
+
 const register = async (payload: Partial<IUser>): Promise<Omit<IUser, 'password'>> => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -35,12 +37,12 @@ const login = async (payload: Partial<IUser>): Promise<{ accessToken: string, re
   const user = await User.findOne({ email: email as string }).select('+password');
   
   if (!user || !user.password) {
-    throw new Error('User not found or password not set');
+    throw new CustomError(401, 'Invalid email or password');
   }
 
   const isPasswordMatch = await bcrypt.compare(password as string, user.password);
   if (!isPasswordMatch) {
-    throw new Error('Invalid email or password');
+    throw new CustomError(401, 'Invalid email or password');
   }
 
   const jwtPayload = {
