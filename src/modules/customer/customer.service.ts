@@ -36,7 +36,25 @@ const getPaginatedCustomers = async (query: any) => {
   };
 };
 
+const getCustomerById = async (id: string) => {
+  const result = await Customer.findById(id);
+  return result;
+};
+
+const updateCustomer = async (id: string, payload: Partial<ICustomer>) => {
+  const result = await Customer.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+const deleteCustomer = async (id: string) => {
+  const result = await Customer.findByIdAndDelete(id);
+  return result;
+};
+
 export const CustomerService = {
   createCustomer,
   getPaginatedCustomers,
+  getCustomerById,
+  updateCustomer,
+  deleteCustomer,
 };

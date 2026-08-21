@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ProductService } from "./product.service";
 import ApiResponse from "../../utils/apiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
-import { uploadCloudinary } from "../../helpers/cloudinary";
+import { uploadCloudinary, deleteCloudinary } from "../../helpers/cloudinary";
 import { Product } from "./product.model";
 
 const createProduct = asyncHandler(async (req: Request, res: Response) => {
@@ -147,6 +147,21 @@ const updateProduct = asyncHandler(async (req: Request, res: Response) => {
     req.body.images = [...existingImages, ...newImages];
   }
 
+  // Find removed images and delete them from Cloudinary
+  const existingProduct = await ProductService.getSingleProduct(req.params.id as string);
+  if (existingProduct && existingProduct.images) {
+    const newImageIds = req.body.images ? req.body.images.map((img: any) => img.public_id) : [];
+    const imagesToDelete = existingProduct.images.filter((oldImg: any) => oldImg.public_id && !newImageIds.includes(oldImg.public_id));
+    
+    for (const img of imagesToDelete) {
+      try {
+        await deleteCloudinary(img.public_id);
+      } catch (err) {
+        console.error(`Failed to delete product image from Cloudinary: ${img.public_id}`, err);
+      }
+    }
+  }
+
   const result = await ProductService.updateProduct(
     req.params.id as string,
     req.body,
@@ -155,6 +170,19 @@ const updateProduct = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
+  const existingProduct = await ProductService.getSingleProduct(req.params.id as string);
+  if (existingProduct && existingProduct.images) {
+    for (const img of existingProduct.images) {
+      if (img.public_id) {
+        try {
+          await deleteCloudinary(img.public_id);
+        } catch (err) {
+          console.error(`Failed to delete product image on deletion: ${img.public_id}`, err);
+        }
+      }
+    }
+  }
+
   const result = await ProductService.deleteProduct(req.params.id as string);
   ApiResponse.sendSuccess(res, 200, "Product deleted successfully", result);
 });

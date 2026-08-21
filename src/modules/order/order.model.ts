@@ -6,6 +6,9 @@ const orderSchema = new Schema<IOrder>(
     customerName: { type: String, required: true },
     customerPhone: { type: String, required: true },
     shippingAddress: { type: String, required: true },
+    division: { type: String },
+    district: { type: String },
+    upazila: { type: String },
     note: { type: String },
     items: [
       {

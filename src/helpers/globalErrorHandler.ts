@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import CustomError from "./CustomError";
+import { logger } from "../utils/logger";
 
 const developmentError = (error: CustomError, res: Response): Response => {
   const fullStack = error.stack ? error.stack.split("\n") : [];
@@ -53,11 +54,11 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ): Response | void => {
-  console.error("Global Error Handler caught an error:", error);
-  console.error("Request Body:", req.body);
+  logger.error("Global Error Handler caught an error:", error);
+  logger.error(`Request Body: ${JSON.stringify(req.body)}`);
   
   if (req.file && req.file.path && fs.existsSync(req.file.path)) {
-    try { fs.unlinkSync(req.file.path); } catch (e) { console.error("Failed to delete temp file:", e); }
+    try { fs.unlinkSync(req.file.path); } catch (e) { logger.error("Failed to delete temp file:", e); }
   }
 
   if (req.files) {

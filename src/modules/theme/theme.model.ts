@@ -20,12 +20,19 @@ export interface IFooterSetting {
   copyrightText?: string;
 }
 
+export interface IStoreInfo {
+  name?: string;
+  logo?: string;
+}
+
 export interface ITheme extends Document {
   themeId: string;
   primaryColor: string;
   fontFamily: string;
   language?: string;
   footer?: IFooterSetting;
+  storeInfo?: IStoreInfo;
+  banners?: { secure_url: string; public_id: string }[];
 }
 
 const footerSchema = new Schema<IFooterSetting>({
@@ -48,6 +55,11 @@ const footerSchema = new Schema<IFooterSetting>({
   copyrightText: { type: String, default: '' },
 }, { _id: false });
 
+const storeInfoSchema = new Schema<IStoreInfo>({
+  name: { type: String, default: 'MY STORE' },
+  logo: { type: String, default: '' },
+}, { _id: false });
+
 const themeSchema = new Schema<ITheme>(
   {
     themeId: { type: String, default: 'light' },
@@ -55,6 +67,13 @@ const themeSchema = new Schema<ITheme>(
     fontFamily: { type: String, default: 'Inter' },
     language: { type: String, enum: ['en', 'bn'], default: 'en' },
     footer: { type: footerSchema, default: () => ({}) },
+    storeInfo: { type: storeInfoSchema, default: () => ({ name: 'MY STORE', logo: '' }) },
+    banners: [
+      {
+        secure_url: { type: String, required: true },
+        public_id: { type: String, required: true }
+      }
+    ],
   },
   { timestamps: true }
 );

@@ -15,7 +15,8 @@ const userSchema = new Schema<IUser>(
     avatar: {
       public_id: { type: String },
       secure_url: { type: String }
-    }
+    },
+    refreshToken: { type: String }
   },
   {
     timestamps: true,

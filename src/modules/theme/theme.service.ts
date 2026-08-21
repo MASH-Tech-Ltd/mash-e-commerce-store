@@ -1,6 +1,5 @@
 import { Theme } from './theme.model';
 import { ITheme } from './theme.model';
-import { Store } from '../store/store.model';
 import { User } from '../auth/auth.model';
 
 const updateTheme = async (payload: Partial<ITheme>) => {
@@ -18,15 +17,14 @@ const getTheme = async () => {
     result = await Theme.create({});
   }
 
-  const store = await Store.findOne({});
   const admin = await User.findOne({ role: 'admin' });
 
   const themeObj = result.toObject() as any;
 
   themeObj.storeInfo = {
-    name: store?.name || 'My Store',
-    logo: store?.logo || '',
-    settings: store?.settings || {}
+    name: themeObj.storeInfo?.name || 'My Store',
+    logo: themeObj.storeInfo?.logo || '',
+    settings: {}
   };
 
   if (admin) {

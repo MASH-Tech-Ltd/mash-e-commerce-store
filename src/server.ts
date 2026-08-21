@@ -3,6 +3,7 @@ import config from './config/index';
 import { connectDatabase } from './database/db';
 import { seedAdmin } from './utils/seedSuperAdmin';
 import { seedDemoStorefront } from './utils/seedStorefront';
+import { logger } from './utils/logger';
 
 import { initSocket } from './socket';
 
@@ -13,14 +14,14 @@ connectDatabase()
     // await seedAdmin();
     // await seedDemoStorefront();
     const server = app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
+      logger.info(`Server running at http://localhost:${PORT}`);
     });
     
     // Initialize Socket.io
     initSocket(server);
   })
   .catch((error: unknown) => {
-    console.error("Database connection failed!!", error);
+    logger.error("Database connection failed!!", error);
     process.exit(1);
   });
 

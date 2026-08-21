@@ -9,7 +9,8 @@ export interface IUser extends Document {
   address?: string;
   details?: string;
   avatar?: {
-    public_id: string;
-    secure_url: string;
+    public_id?: string;
+    secure_url?: string;
   };
+  refreshToken?: string;
 }

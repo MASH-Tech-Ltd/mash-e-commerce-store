@@ -7,14 +7,10 @@ import { CourierRoutes } from '../modules/courier/courier.route';
 import { CustomerRoutes } from '../modules/customer/customer.route';
 import { ThemeRoutes } from '../modules/theme/theme.route';
 import { AnalyticsRoutes } from '../modules/analytics/analytics.route';
-import { SystemRoutes } from '../modules/system/system.route';
-
 import { FraudCheckRoutes } from '../modules/fraudCheck/fraudCheck.route';
-
 import { UserRoutes } from '../modules/user/user.route';
-import { SupportRoutes } from '../modules/support/support.route';
 import { NotificationRoutes } from '../modules/notification/notification.route';
-import { StoreRoutes } from '../modules/store/store.route';
+import { SecurityRoutes } from '../modules/security/security.route';
 
 const router = Router();
 
@@ -22,10 +18,6 @@ const moduleRoutes = [
   {
     path: '/users',
     route: UserRoutes,
-  },
-  {
-    path: '/store',
-    route: StoreRoutes,
   },
 
   {
@@ -65,10 +57,6 @@ const moduleRoutes = [
     path: '/analytics',
     route: AnalyticsRoutes,
   },
-  {
-    path: '/system',
-    route: SystemRoutes,
-  },
 
 
   {
@@ -80,15 +68,15 @@ const moduleRoutes = [
     route: NotificationRoutes,
   },
   {
-    path: '/support',
-    route: SupportRoutes,
+    path: '/security',
+    route: SecurityRoutes,
   }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 
 router.get('/', (req, res) => {
-  res.json({ message: 'Welcome to MashEasy Single Store API' });
+  res.json({ message: 'Welcome to MashEasy Single Store' });
 });
 
 export default router;

@@ -46,9 +46,42 @@ const getAllCredentials = async () => {
   });
 };
 
+const sendOrderToCourier = async (order: any) => {
+  const courierConfig = await Courier.findOne({});
+  
+  if (!courierConfig || !courierConfig.provider || !courierConfig.clientId) {
+    throw new Error('Courier configuration is missing. Cannot dispatch order.');
+  }
+
+  const { provider, clientId, apiSecret } = courierConfig;
+  const decryptedSecret = apiSecret ? decryptText(apiSecret) : '';
+
+  // Simulate API fetch call to the respective provider
+  console.log(`[COURIER DISPATCH] Sending order ${order._id} to ${provider.toUpperCase()}`);
+  console.log(`[COURIER DISPATCH] Auth: ClientID=${clientId}, Secret=${decryptedSecret ? '***' : 'NONE'}`);
+  console.log(`[COURIER DISPATCH] Payload:`, {
+    invoice: order.orderId || order._id,
+    recipient_name: order.customerName,
+    recipient_phone: order.customerPhone,
+    recipient_address: order.shippingAddress,
+    cod_amount: order.totalPrice,
+  });
+
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Simulated response
+  const trackingId = `${provider.toUpperCase()}-${Math.floor(Math.random() * 1000000)}`;
+  
+  console.log(`[COURIER DISPATCH SUCCESS] Tracking ID: ${trackingId}`);
+
+  return trackingId;
+};
+
 export const CourierService = {
   getCourierCharge,
   updateCourierCharge,
   saveCredentials,
   getAllCredentials,
+  sendOrderToCourier,
 };

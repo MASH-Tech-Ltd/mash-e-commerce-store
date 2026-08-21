@@ -48,12 +48,15 @@ const getDashboardStats = asyncHandler(async (req: Request, res: Response) => {
 
   const chartData = Object.values(chartDataMap);
 
+  // Compute a real conversion rate relative to the data we have
+  const computedConversionRate = totalCustomers > 0 ? ((totalOrders / totalCustomers) * 100).toFixed(1) : 0;
+
   ApiResponse.sendSuccess(res, 200, 'Dashboard stats retrieved', {
     totalOrders,
     totalCustomers,
     totalRevenue,
     chartData,
-    conversionRate: 3.2
+    conversionRate: Number(computedConversionRate)
   });
 });
 

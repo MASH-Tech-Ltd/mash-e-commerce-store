@@ -13,6 +13,9 @@ export interface IOrder extends Document {
   customerName: string;
   customerPhone: string;
   shippingAddress: string;
+  division?: string;
+  district?: string;
+  upazila?: string;
   note?: string;
   items: IOrderItem[];
   subTotal: number;
