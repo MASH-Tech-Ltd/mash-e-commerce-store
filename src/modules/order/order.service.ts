@@ -19,10 +19,7 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
       throw new Error("Failed to create order");
     }
 
-    // Run fraud check in the background
-    FraudCheckService.checkFraud(order._id.toString()).catch((err) => {
-      console.error("Error running fraud check:", err);
-    });
+    // Fraud check will be run after transaction commits (moved below)
 
     const existingCustomer = await Customer.findOne({
       phone: payload.customerPhone,
@@ -84,6 +81,12 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
 
     await session.commitTransaction();
     session.endSession();
+
+    // Run fraud check in the background AFTER transaction commits
+    FraudCheckService.checkFraud(order._id.toString()).catch((err) => {
+      console.error("Error running fraud check:", err);
+    });
+
     return order;
   } catch (error) {
     await session.abortTransaction();
